@@ -1,0 +1,3 @@
+FirstName,LastName,SamAccountName,Email,OU,Password
+Oleg,Gazmanov,ogazmanov,ogazmanov@argentum.org,"OU=IT-Dep,DC=argentum,DC=org",P@ssw0rd123
+Zxc,Ghoul,zxcg,zxcg@argentum.org,"OU=IT-Dep,DC=argentum,DC=org",P@ssw0rd123
