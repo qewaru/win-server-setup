@@ -76,19 +76,21 @@ This guide covers step-by-step installation, setup, managing and automation of W
     > 
     > `Alternate DNS server: <prefered DNS> ` (leave blank, if you want to use ISPs DNS, I will use 8.8.8.8)
 
-## **Troubleshooting**
-> Problem: DNS Server warning about failed synchronization
-
-1. Open ```cmd.exe``` as Administrator.
-2. Run ```repadmin /syncall /AdeP``` - it should force synchronization for Active Directory
-3. If previous command works fine, then everything is running. Otherwise, run ```repadmin /replsummary``` - checks status accross the domain for errors and/or successes.Procceed by next steps.
-4. Run ```repadmin /showrepl``` - it will show the replication summarry of the previous command.
-5. Finally, run ```repadmin /syncall /AdeP``` once again. Now it should synchronize.
-
-
 ## Automation User & Group Creation
 Instead of manually adding every user, you can use automation scripts `<script-name>.ps1`. It can be really helpful for large domains. 
 > *You can find the scripts [here](./scripts)*
+
+- SSH tunnel creation
+
+  The most important thing of managing domain and server - remote control. The best and fastest way to get control over machine - SSH tunnel.
+
+  1. Check if OpenSSH is installed on the machine - `Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH*'`
+  2. If OpenSSH.Server is missing, then install it via `Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0`
+  3. To start the OpenSSH session type in `Start-Service sshd`
+  4. Optional: If you want for OpenSSH session to be automatically started on machine startup type `Set-Service -Name sshd -StartupType Automatic`
+  5. Finally, you can check if OpenSSH works - `Get-Service sshd`
+ 
+  Connection should be easy too: open the terminal and type `<user-name>@<local-ip-address>` (e.g. `superAdmin@192.168.0.100`).
 
 - Creating new user
 
@@ -101,3 +103,21 @@ All other lines will contain information for **each user**, splitted by commas, 
 > **FAQ:** *What `OU=x,DC=y,DC=z` stands for?*
 >
 > **Answer:** OU - Organizational Unit in your AD (used for department separation, with different policies/permissions). DC - splited name of your domain. For exmaple, if your full domain is `mycooldomain.local`, then DC will be `DC=mycooldomain,DC=local`.
+
+## **Troubleshooting**
+> Problem: DNS Server warning about failed synchronization
+
+1. Open ```cmd.exe``` as Administrator.
+2. Run ```repadmin /syncall /AdeP``` - it should force synchronization for Active Directory
+3. If previous command works fine, then everything is running. Otherwise, run ```repadmin /replsummary``` - checks status accross the domain for errors and/or successes.Procceed by next steps.
+4. Run ```repadmin /showrepl``` - it will show the replication summarry of the previous command.
+5. Finally, run ```repadmin /syncall /AdeP``` once again. Now it should synchronize.
+
+> Problem: OpenSSH does not work
+
+1. Let's check, if firewall is allowing ssh connection - `Get-NetFirewallRule -Name *ssh*`
+2. Find **"Enabled"** and **"Action"** tabs. If they are True/Allow, then everything should be fine.
+3. If not, use this - `New-NetFirewallRule -Name sshd -DisplayName 'OpenSSH Server (sshd)' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22`
+4. If problem persists, check if router firewall rules allow connection
+5. Additionally, check for typos in your terminal connection, it must be `<user-name>@<local-ip-address>` (e.g. `superAdmin@192.168.0.100`)
+
