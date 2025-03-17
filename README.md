@@ -6,9 +6,9 @@ This guide covers step-by-step installation, setup, managing and automation of W
 - [Before you start](#before-you-start)
 - [Server setup](#server-setup)
 - [Configuring AD DS + DNS](#configuring-ad-ds-dns)
-- [Troubleshooting](#troubleshooting)
 - [Automation User & Group Creation (via PowerShell)](#automation-user-group-creation)
 - [Setting Up GPO for Security](#setting-up-gpo-for-security)
+- [Troubleshooting](#troubleshooting)
 
 ## Before you start
 
@@ -103,6 +103,18 @@ All other lines will contain information for **each user**, splitted by commas, 
 > **FAQ:** *What `OU=x,DC=y,DC=z` stands for?*
 >
 > **Answer:** OU - Organizational Unit in your AD (used for department separation, with different policies/permissions). DC - splited name of your domain. For exmaple, if your full domain is `mycooldomain.local`, then DC will be `DC=mycooldomain,DC=local`.
+
+## Setting Up GPO for Security
+GPO (Group Policy Object) contain rules/permissions/restrictions for chosen Group/OU/Computer/Users in the domain.
+Just like with User & Group creation, fastest and easiest way will be to use PowerShell scripts.
+> *You can find the scripts [here](./scripts)*
+
+Script for GPO creation contains must-have rules and **does not** read from `.csv` file.
+Logic of the scripts is:
+1. Creating password security policy - setting minimum length and forcing complexity
+2. Disabling access for CMD and Control Panel for non-administrative users
+3. Optionally there is added restriction of USB storage drives (to use the rule, uncomment the command)
+
 
 ## **Troubleshooting**
 > Problem: DNS Server warning about failed synchronization
